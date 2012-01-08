@@ -10,12 +10,12 @@ user = "thenoviceoof"
 repo_list_url = URL_BASE + "users/%s/repos" % user
 req = requests.get(repo_list_url)
 print(req.headers["X-RateLimit-Remaining"])
-repos = json.loads(req.content) 
+repos = json.loads(req.content)
 repo_names = [r['name'] for r in repos]
 pprint(repo_names)
 
-# get number of commits each repo
-repo = repos_names[0]
+# get number of commits for each repo
+repo = repo_names[0]
 URL_GITHUB = "https://github.com/"
 repo_commits_url = URL_GITHUB + "%s/%s/graphs/participation" % (user, repo)
 print(repo_commits_url)
