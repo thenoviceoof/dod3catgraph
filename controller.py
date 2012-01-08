@@ -9,7 +9,7 @@ import logging
 try:
     import json
 except ImportError:
-    import simplejson
+    import simplejson as json
 
 ################################################################################
 # Controllers
@@ -21,7 +21,7 @@ class Index(webapp.RequestHandler):
     def get(self):
         # check if we have a user
         if not(self.request.get("user", None)):
-            self.response.out.write("hello")
+            self.response.out.write(template.render("templates/index.html", {}))
             return
         user = self.request.get("user")
 
@@ -46,9 +46,10 @@ class Index(webapp.RequestHandler):
             # get number of commits for each repo
             repos = {}
             for repo in repo_names:
-                repo_commits_url = "%s%s/%s/graphs/participation" % (user, repo,
-                                                                     URL_GITHUB)
-                result = urlfetch.fetch(repo_commits_url)
+                repo_commits_url = \
+                    "%s%s/%s/graphs/participation" % (GITHUB_URL_BASE, 
+                                                      user, repo)
+                result = urlfetch.fetch(repo_commits_ur)
                 if result.status_code != 200:
                     # !!!
                     raise Exception("Could not fetch a repo's commits")
