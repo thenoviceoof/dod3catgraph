@@ -17,6 +17,8 @@ except ImportError:
 GITHUB_API_URL_BASE = "https://api.github.com/"
 GITHUB_URL_BASE = "https://github.com/"
 
+TIMEOUT = 60 # assuming minutes
+
 class Index(webapp.RequestHandler):
     def get(self):
         # check if we have a user
@@ -35,7 +37,7 @@ class Index(webapp.RequestHandler):
             requests_left = result.headers["X-RateLimit-Remaining"]
             ## we might use this if we reroute to oauth to get around limits
             # usernames are (\w|\-)
-            if not memcache.add("_requests_left", requests_left, 60):
+            if not memcache.add("_requests_left", requests_left, TIMEOUT):
                 logging.error("Memcache set failed.")
             if result.status_code != 200:
                 # !!!
@@ -61,7 +63,7 @@ class Index(webapp.RequestHandler):
 
             data = repos
             # write out to memcache
-            if not memcache.add(user, data, 60):
+            if not memcache.add(user, data, TIMEOUT):
                 logging.error("Memcache set failed.")
 
         self.response.out.write("yay")
