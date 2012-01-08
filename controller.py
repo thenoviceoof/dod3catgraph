@@ -43,6 +43,8 @@ class Index(webapp.RequestHandler):
             repos = json.loads(result.content)
             repo_names = [r['name'] for r in repos]
 
+            # !!! MOVE THIS TO THE CLIENT SIDE
+            # !!! Cross Origin Resource Sharing for AJAX requests, reg oauth
             # get number of commits for each repo
             repos = {}
             for repo in repo_names:
@@ -63,6 +65,11 @@ class Index(webapp.RequestHandler):
                 logging.error("Memcache set failed.")
 
         self.response.out.write("yay")
+    # just reroute back to GET
+    def post(self):
+        self.get()
+
+
 
 application = webapp.WSGIApplication(
     [('/', Index),
