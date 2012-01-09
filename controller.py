@@ -48,25 +48,26 @@ class Index(webapp.RequestHandler):
             # !!! MOVE THIS TO THE CLIENT SIDE
             # !!! Cross Origin Resource Sharing for AJAX requests, reg oauth
             # get number of commits for each repo
-            repos = {}
-            for repo in repo_names:
-                repo_commits_url = \
-                    "%s%s/%s/graphs/participation" % (GITHUB_URL_BASE, 
-                                                      user, repo)
-                result = urlfetch.fetch(repo_commits_ur)
-                if result.status_code != 200:
-                    # !!!
-                    raise Exception("Could not fetch a repo's commits")
-                thing = json.loads(result.content)
-                # might use "all" if we want to display that
-                repos[repo] = thing["owner"]
+            # repos = {}
+            # for repo in repo_names:
+            #     repo_commits_url = \
+            #         "%s%s/%s/graphs/participation" % (GITHUB_URL_BASE, 
+            #                                           user, repo)
+            #     result = urlfetch.fetch(repo_commits_ur)
+            #     if result.status_code != 200:
+            #         # !!!
+            #         raise Exception("Could not fetch a repo's commits")
+            #     thing = json.loads(result.content)
+            #     # might use "all" if we want to display that
+            #     repos[repo] = thing["owner"]
 
-            data = repos
-            # write out to memcache
-            if not memcache.add(user, data, TIMEOUT):
-                logging.error("Memcache set failed.")
+            # data = repos
+            # # write out to memcache
+            # if not memcache.add(user, data, TIMEOUT):
+            #     logging.error("Memcache set failed.")
 
-        self.response.out.write("yay")
+        self.response.out.write(template.render("templates/graph.html",{}))
+
     # just reroute back to GET
     def post(self):
         self.get()
