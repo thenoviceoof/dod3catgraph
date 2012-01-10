@@ -65,13 +65,38 @@ function tripleToString(color) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// d3
+// util
+
+// first, we randomly arrange the repos, in case colors don't work
+function shuffle(list) {
+    function swap(list, i,j) {
+	var tmp = list[i];
+	list[i] = list[j];
+	list[j] = tmp;
+    }
+    // from http://stackoverflow.com/questions/1527803/generating-random-numbers-in-javascript
+    function getRandomInt (min, max) {
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    function randomInd(list) {
+	return getRandomInt(0, list.length-1);
+    }
+    for(var i in list) {
+	var j = randomInd(list);
+	swap(list, i, j);
+    }
+    return list;
+}
+repo_list = shuffle(repo_list);
 
 // open the repo of interest in a new tab/window
 function followRepo(name) {
     var url = "https://github.com/" + user + "/" + name;
     window.open(url,'_blank');
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// d3
 
 // consts
 var m = repo_list.length;
