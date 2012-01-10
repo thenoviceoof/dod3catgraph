@@ -69,10 +69,15 @@ function tripleToString(color) {
 
 // !!! TMP:
 var user = "thenoviceoof";
-var repo_list = ["pensievr", "rooibos", "level-up", "flyer-poke", "notesoble"];
+var repo_list = ["rooibos", "level-up", "flyer-poke", "notesoble", "pensievr"];
 
+// consts
 var m = repo_list.length;
 var n = 52;
+
+var p = 24; // padding for labels
+var w = $("#main").width();
+var h = 200 - .5 - p; // height for data
 
 // generate some empty data
 var start = true;
@@ -87,10 +92,6 @@ var stack_data = d3.layout.stack()(data);
 var color = d3.scale.linear()
     .domain([0,m])
     .range([0,360]);
-
-var p = 20; // padding for labels
-var w = $("#main").width();
-var h = 200 - .5 - p; // height for data
 
 // bounds in x and y
 var mx = n;
@@ -127,12 +128,25 @@ var bars = layers.selectAll("g.bar")
     .attr("class", "bar")
     .attr("transform", function(d) { return "translate(" + x(d) + ",0)"; });
 
-// draw "empty" bars
+// draw "empty" bars, which we update later
+var barPadding = 0.2;
 bars.append("rect")
-    .attr("width", x({x: .9}))
-    .attr("x", 0)
+    .attr("width", x({x: 1.0 - barPadding}))
+    .attr("x", x({x: barPadding/2}))
     .attr("y", h)
     .attr("height", 0);
+
+function prevWeekMonthChange(i) {
+    function prevWeekMonth(a) {
+	var timestamp = a*7*24*3600*1000;
+	return (new Date((new Date()).getTime()-timestamp)).getMonth();
+    }
+    var m1 = prevWeekMonth(i);
+    var m2 = prevWeekMonth(i-1);
+    if(m1 != m2)
+	return m2;
+    return -1;
+}
 
 // time labels
 var labels = vis.selectAll("text.label")
@@ -141,12 +155,36 @@ var labels = vis.selectAll("text.label")
     .attr("class", "label")
     .attr("x", x)
     .attr("y", h + 6)
-    .attr("dx", x({x: .45}))
+    .attr("dx", "0.3em")
     .attr("dy", ".71em")
-    .attr("text-anchor", "middle")
-    .text(function(d, i) { return i; });
+    .attr("text-anchor", "left")
+    .text(function(d, i) {
+	// figure out if we're in the beginning of a month
+	var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+		      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+	var m = prevWeekMonthChange(n-i+1);
+	if(m != -1) {
+	    console.log(m);
+	    return months[m];
+	}
+	return "";
+    });
+// line to mark beginning of month
+var labelLines = vis.selectAll("line.label")
+    .data(data[0])
+    .enter().append("line")
+    .attr("class", "label")
+    .attr("x1",x)
+    .attr("x2",x)
+    .attr("y1", h + 4)
+    .attr("y2", function(d, i) {
+	// figure out if we're in the beginning of a month
+	if(prevWeekMonthChange(n-i+1) != -1)
+	    return h + 18;
+	return h + 4;
+    });
 
-// baseline (?)
+// baseline
 vis.append("line")
     .attr("x1", 0)
     .attr("x2", w)
@@ -154,27 +192,40 @@ vis.append("line")
     .attr("y2", h)
     .attr("class","baseline");
 
+// lines to highlight each week, especially in long stretches of empty time
+var spacing = 2;
+var labelLines = vis.selectAll("line.weekhighlight")
+    .data(data[0])
+    .enter().append("line")
+    .attr("class", "weekhighlight")
+    .attr("x1",function(d) {
+	return x(d) + spacing;
+    })
+    .attr("x2",function(d) {
+	var a = {x: d.x + 1};
+	return x(a) - spacing;
+    })
+    .attr("y1", h)
+    .attr("y2", h);
+
 function redraw() {
+    // re-make the data
     stack_data = d3.layout.stack()(data);
 
-    // bounds in x and y
+    // re-find maximum bound
     my = d3.max(stack_data, function(d) {
 	return d3.max(d, function(d) {
             return d.y0 + d.y;
 	});
     });
 
-    // interpolation
-    x = function(d) { return d.x * w / mx; };
-    y0 = function(d) { return h - d.y0 * h / my; };
-    y1 = function(d) { return h - (d.y + d.y0) * h / my; };
-
     // and redraw the bars
     bars.selectAll("rect")
         .transition()
-	.delay(function(d, i) { return i * 10; })
+	.duration(800)
+	.delay(function(d, i) { return i * 1000; })
 	.attr("y", y1)
-	.attr("height", function(d) { console.log(d); return y0(d) - y1(d); });
+	.attr("height", function(d) { return y0(d) - y1(d); });
 }
 
 ////////////////////////////////////////////////////////////////////////////////

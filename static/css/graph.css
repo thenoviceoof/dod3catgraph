@@ -2,9 +2,9 @@
     position:absolute;
     top:50%;
     left:50%;
-    width:60em;
+    width:80em;
     height:16em;
-    margin:-8em 0 0 -30em;
+    margin:-8em 0 0 -40em;
     text-align:center;
     /* outline:1px black solid; */
 }
@@ -25,10 +25,6 @@ h1#title {
     font:bold 24pt arial;
 }
 
-#chart {
-    margin:0 auto;
-}
-
 footer {
     position:absolute;
     left:0;
@@ -38,4 +34,31 @@ footer {
     font:10pt arial, sans-serif;
     text-align:center;
     letter-spacing:1px;
+}
+
+#chart {
+    margin:0 auto;
+}
+
+/* SVG STUFF */
+
+#chart text.label {
+    font-family:monospace;
+    border-left:1px black solid;
+    fill:#AAA;
+}
+
+#chart line.label {
+    stroke:#AAA;
+    stroke-width:1px;
+}
+
+#chart line.baseline {
+    stroke:#CCC;
+    stroke-width:2px;
+}
+
+#chart line.weekhighlight {
+    stroke:#AAA;
+    stroke-width:2px;
 }
