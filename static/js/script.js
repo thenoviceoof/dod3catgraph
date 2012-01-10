@@ -67,10 +67,7 @@ function tripleToString(color) {
 ////////////////////////////////////////////////////////////////////////////////
 // d3
 
-// !!! TMP:
-var user = "thenoviceoof";
-var repo_list = ["rooibos", "level-up", "flyer-poke", "notesoble", "pensievr"];
-
+// open the repo of interest in a new tab/window
 function followRepo(name) {
     var url = "https://github.com/" + user + "/" + name;
     window.open(url,'_blank');

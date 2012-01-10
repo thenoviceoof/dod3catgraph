@@ -51,8 +51,8 @@ class Index(webapp.RequestHandler):
             if not memcache.add(user, data, TIMEOUT):
                 logging.error("Memcache set failed.")
 
-        pars = {"repos": data}
-        self.response.out.write(template.render("templates/graph.html",{}))
+        pars = {"user": user, "repos": json.dumps(data)}
+        self.response.out.write(template.render("templates/graph.html", pars))
 
     # just reroute back to GET
     def post(self):
@@ -60,22 +60,25 @@ class Index(webapp.RequestHandler):
 
 class Repo(webapp.RequestHandler):
     def get(self, user, repo):
-        # Can't move these requests to the client side
         # get number of commits for each repo
+        # Note: can't move these requests to the client side
         cache_name = user + "_" + repo
-        repo_commits_url = "%s%s/%s/graphs/participation" % (GITHUB_URL_BASE,
-                                                             user, repo)
-        result = urlfetch.fetch(repo_commits_url)
-        if result.status_code != 200:
-            # !!!
-            raise Exception("Could not fetch a repo's commits")
-        repo_commits = json.loads(result.content)
-        # might use "all" if we want to display that
-        commits = repo_commits["owner"]
+        # see if it's in the cache
+        commits = memcache.get(cache_name)
+        if commits is None:
+            repo_commits_url = "%s%s/%s/graphs/participation" % (GITHUB_URL_BASE,
+                                                                 user, repo)
+            result = urlfetch.fetch(repo_commits_url)
+            if result.status_code != 200:
+                # !!!
+                raise Exception("Could not fetch a repo's commits")
+            repo_commits = json.loads(result.content)
+            # might use "all" if we want to display that
+            commits = repo_commits["owner"]
 
-        # write out to memcache
-        if not memcache.add(cache_name, commits, TIMEOUT):
-            logging.error("Memcache set failed.")
+            # write out to memcache
+            if not memcache.add(cache_name, commits, TIMEOUT):
+                logging.error("Memcache set failed.")
 
         self.response.headers['Content-Type'] = "application/json"
         self.response.out.write(json.dumps(commits))
