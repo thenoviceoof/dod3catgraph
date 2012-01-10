@@ -40,14 +40,21 @@ footer {
     margin:0 auto;
 }
 
+/* ------------------------------------------------------------ */
 /* SVG STUFF */
+
+#chart g.layer {
+    opacity:0.7;
+}
+#chart g.layer:hover {
+    opacity:1.0;
+}
 
 #chart text.label {
     font-family:monospace;
     border-left:1px black solid;
     fill:#AAA;
 }
-
 #chart line.label {
     stroke:#AAA;
     stroke-width:1px;
@@ -57,7 +64,6 @@ footer {
     stroke:#CCC;
     stroke-width:2px;
 }
-
 #chart line.weekhighlight {
     stroke:#AAA;
     stroke-width:2px;

@@ -124,7 +124,7 @@ var layers = vis.selectAll("g.layer")
     .data(stack_data)
     .enter().append("g")
     .style("fill", function(d, i) {
-	return tripleToString(hsvToRgb(color(i), 30, 85));
+	return tripleToString(hsvToRgb(color(i), 40, 85));
     })
     .attr("class", "layer");
 
@@ -138,6 +138,7 @@ var bars = layers.selectAll("g.bar")
 // draw "empty" bars, which we update later
 var barPadding = 0.2;
 bars.append("rect")
+    .attr("class", "bars")
     .attr("width", x({x: 1.0 - barPadding}))
     .attr("x", x({x: barPadding/2}))
     .attr("y", h)
