@@ -90,7 +90,7 @@ function shuffle(list) {
 repo_list = shuffle(repo_list);
 
 // open the repo of interest in a new tab/window
-function followRepo(name) {
+function followRepo(user, name) {
     var url = "https://github.com/" + user + "/" + name;
     window.open(url,'_blank');
 }
@@ -110,7 +110,9 @@ var h = 300 - p; // height for data
 var start = true;
 var data = d3.range(m).map(function(d, j) {
     var tmp_data = d3.range(n).map(function(d, i){
-	return {x: i, y: 0, name: repo_list[j]};
+	return {x: i, y: 0,
+		name: repo_list[j].name,
+		user: repo_list[j].user};
     });
     return tmp_data;
 });
@@ -206,7 +208,7 @@ bars.append("rect")
     .attr("y", h)
     .attr("height", 0)
     .on("click", function(d) {
-	followRepo(d.name);
+	followRepo(d.user, d.name);
     })
     .on("mouseover", function(d) {
 	repoNameText.text(d.name);
@@ -324,6 +326,9 @@ function redraw() {
 ////////////////////////////////////////////////////////////////////////////////
 // Data load requests
 
+var RELOAD_LIMIT = 2;
+var reload_count = d3.range(repo_list.length).map(function(){ return 0; });
+
 // recursion, so I can use setTimeout: trying to load cached data means
 // a big pileup, and locks up the cpu pretty well, so we stagger requests
 function loadData(i) {
@@ -348,10 +353,24 @@ function loadData(i) {
 	    redraw();
 	}
     };
-    $.ajax({
-	url: "/"+user+"/"+repo,
-	success: repoClosure(repo),
-    });
-    setTimeout(function(){loadData(i+1)}, 200);
+    var errorClosure = function (repo) {
+	// sometimes, you need to give github a bit of time to count up
+	return setTimeout(function() {
+	    var ind = $.inArray(repo, repo_list);
+	    if(reload_count[ind] < RELOAD_LIMIT) {
+		reload_count[ind] += 1;
+		fetch_repo(repo);
+	    }
+	}, 5000 + 5000*Math.random());
+    }
+    function fetch_repo(repo) {
+	$.ajax({
+	    url: "/"+repo.user+"/"+repo.name,
+	    success: repoClosure(repo),
+	    error: errorClosure(repo),
+	});
+    }
+    fetch_repo(repo);
+    setTimeout(function(){loadData(i+1)}, 1000);
 }
 loadData(0);

@@ -32,7 +32,8 @@ class Index(webapp.RequestHandler):
         data = memcache.get("user")
         if data is None:
             # get the repos (users/:user/repos)
-            repo_list_url = GITHUB_API_URL_BASE + "users/%s/repos" % user
+            repo_list_url = "%susers/%s/repos?type=all" % (GITHUB_API_URL_BASE,
+                                                           user)
             # make the request
             result = urlfetch.fetch(repo_list_url)
             requests_left = result.headers["X-RateLimit-Remaining"]
@@ -41,10 +42,11 @@ class Index(webapp.RequestHandler):
             if not memcache.add("_requests_left", requests_left, TIMEOUT):
                 logging.error("Memcache set failed.")
             if result.status_code != 200:
-                # !!!
+                # !!! replace with a better exception?
                 raise Exception("Could not find a username")
             repos = json.loads(result.content)
-            repo_names = [r['name'] for r in repos]
+            repo_names = [{"name": r['name'], "user": r["owner"]["login"]}
+                          for r in repos]
             data = repo_names
 
             # set the repo list
