@@ -148,6 +148,14 @@ vis.selectAll("text.rule")
     .attr("x", 0)
     .attr("y", ySpot(ruleLabelOffset));
 
+// the floating repo name
+var repoNameText = vis.append("text")
+    .attr("id","overlay")
+    .text("")
+    .attr("x", w*0.5)
+    .attr("y", h*0.5)
+    .attr("text-anchor", "middle");
+
 // layers for each repo
 var layers = vis.selectAll("g.layer")
     .data(stack_data)
@@ -257,14 +265,6 @@ var labelLines = vis.selectAll("line.weekhighlight")
     .attr("y1", h)
     .attr("y2", h);
 
-// the floating repo name
-var repoNameText = vis.append("text")
-    .attr("id","overlay")
-    .text("")
-    .attr("x", w*0.5)
-    .attr("y", h*0.5)
-    .attr("text-anchor", "middle");
-
 function redraw() {
     // re-make the data
     stack_data = d3.layout.stack()(data);
@@ -274,7 +274,7 @@ function redraw() {
 	return d3.max(d, function(d) {
             return d.y0 + d.y;
 	});
-    });
+    }) || 1;
 
     // and redraw the bars
     bars.selectAll("rect")

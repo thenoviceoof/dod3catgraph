@@ -167,7 +167,7 @@ class Repo(webapp.RequestHandler):
 
 application = webapp.WSGIApplication(
     [('/', Index),
-     ('/([\w\-]+)/([\w\-]+)',Repo),
+     ('/([\w\-]+)/(.+)',Repo),
      ],
     debug=True)
 
