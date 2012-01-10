@@ -65,14 +65,20 @@ function tripleToString(color) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// Data load requests
+
+$.ajax({
+    url: "/thenoviceoof/pensievr",
+    success: function(data) { console.log("mu"); console.log(data); }
+});
+
+////////////////////////////////////////////////////////////////////////////////
 // d3
 
 //var n = 52; // res
 //var m = 2;  // number of layers
 var m = 2;
 var n = 2;
-
-var dd = [[{x: 0, y: 0.1}, {x:1, y:100}], [{x: 0, y: 0.1}, {x:1, y:100}]];
 
 var data = d3.layout.stack()(dd);
 // !!!

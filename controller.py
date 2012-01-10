@@ -22,10 +22,11 @@ TIMEOUT = 60 # assuming minutes
 class Index(webapp.RequestHandler):
     def get(self):
         # check if we have a user
-        if not(self.request.get("user", None)):
+        user = self.request.get("user", None)
+        if not(user):
             self.response.out.write(template.render("templates/index.html", {}))
             return
-        user = self.request.get("user")
+        # !!! have to rewrite to use oauth if break limits
 
         # check if the user is in memcache
         data = memcache.get("user")
@@ -44,33 +45,38 @@ class Index(webapp.RequestHandler):
                 raise Exception("Could not find a username")
             repos = json.loads(result.content)
             repo_names = [r['name'] for r in repos]
+            data = repo_names
 
-            # !!! MOVE THIS TO THE CLIENT SIDE
-            # !!! Cross Origin Resource Sharing for AJAX requests, reg oauth
-            # get number of commits for each repo
-            # repos = {}
-            # for repo in repo_names:
-            #     repo_commits_url = \
-            #         "%s%s/%s/graphs/participation" % (GITHUB_URL_BASE, 
-            #                                           user, repo)
-            #     result = urlfetch.fetch(repo_commits_ur)
-            #     if result.status_code != 200:
-            #         # !!!
-            #         raise Exception("Could not fetch a repo's commits")
-            #     thing = json.loads(result.content)
-            #     # might use "all" if we want to display that
-            #     repos[repo] = thing["owner"]
+            # set the repo list
+            if not memcache.add(user, data, TIMEOUT):
+                logging.error("Memcache set failed.")
 
-            # data = repos
-            # # write out to memcache
-            # if not memcache.add(user, data, TIMEOUT):
-            #     logging.error("Memcache set failed.")
-
+        pars = {"repos": data}
         self.response.out.write(template.render("templates/graph.html",{}))
 
     # just reroute back to GET
     def post(self):
         self.get()
+
+class Repo(webapp.RequestHandler):
+    def get(self, user, repo):
+        # Can't move these requests to the client side
+        # get number of commits for each repo
+        cache_name = user + "_" + repo
+        repo_commits_url = "%s%s/%s/graphs/participation" % (GITHUB_URL_BASE,
+                                                             user, repo)
+        result = urlfetch.fetch(repo_commits_url)
+        if result.status_code != 200:
+            # !!!
+            raise Exception("Could not fetch a repo's commits")
+        repo_commits = json.loads(result.content)
+        # might use "all" if we want to display that
+        commits = repo_commits["owner"]
+
+        # write out to memcache
+        if not memcache.add(cache_name, commits, TIMEOUT):
+            logging.error("Memcache set failed.")
+        self.response.out.write(json.dumps(commits))
 
 # # get the request token (temporary) and redirect to the authorization page
 # class OAuth(webapp.RequestHandler):
@@ -156,6 +162,7 @@ class Index(webapp.RequestHandler):
 
 application = webapp.WSGIApplication(
     [('/', Index),
+     ('/([\w\-]+)/([\w\-]+)',Repo),
      ],
     debug=True)
 
