@@ -76,6 +76,8 @@ class Repo(webapp.RequestHandler):
         # write out to memcache
         if not memcache.add(cache_name, commits, TIMEOUT):
             logging.error("Memcache set failed.")
+
+        self.response.headers['Content-Type'] = "application/json"
         self.response.out.write(json.dumps(commits))
 
 # # get the request token (temporary) and redirect to the authorization page
