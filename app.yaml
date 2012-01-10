@@ -1,4 +1,4 @@
-application: githubcommits
+application: dod3catgraph
 version: 1
 runtime: python
 api_version: 1
