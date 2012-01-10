@@ -43,6 +43,11 @@ footer {
 /* ------------------------------------------------------------ */
 /* SVG STUFF */
 
+#chart #overlay {
+    font-size:72pt;
+    opacity:0.3;
+}
+
 #chart g.layer {
     opacity:0.7;
 }

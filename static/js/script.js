@@ -144,8 +144,17 @@ bars.append("rect")
     .attr("y", h)
     .attr("height", 0)
     .on("click", function(d) {
-	console.log(d);
 	followRepo(d.name);
+    })
+    .on("mouseover", function(d) {
+	repoNameText.text(d.name);
+	repoNameText.transition()
+	    .ease("linear")
+	    .duration(500)
+	    .attr("x", 0.5*x({x: d.x}) + 0.25*w);
+    })
+    .on("mouseout", function() {
+	repoNameText.text("");
     });
 
 function prevWeekMonthChange(i) {
@@ -176,7 +185,6 @@ var labels = vis.selectAll("text.label")
 		      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 	var m = prevWeekMonthChange(n-i+1);
 	if(m != -1) {
-	    console.log(m);
 	    return months[m];
 	}
 	return "";
@@ -219,6 +227,14 @@ var labelLines = vis.selectAll("line.weekhighlight")
     })
     .attr("y1", h)
     .attr("y2", h);
+
+// the floating repo name
+var repoNameText = vis.append("text")
+    .attr("id","overlay")
+    .text("")
+    .attr("x", w*0.5)
+    .attr("y", h*0.5)
+    .attr("text-anchor", "middle");
 
 function redraw() {
     // re-make the data
