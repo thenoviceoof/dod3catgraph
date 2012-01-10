@@ -13,6 +13,18 @@
     margin:0 auto;
 }
 
+#user {
+    width:20em;
+    margin:0.5em;
+    text-align:center;
+    font:16pt arial;
+    background-color:#DDF;
+}
+
+#submit {
+    font:16pt arial;
+}
+
 /* ------------------------------------------------------------ */
 /* SVG STUFF */
 
@@ -30,27 +42,27 @@
 
 #chart text.label {
     font-family:monospace;
-    fill:#AAA;
+    fill:#888;
 }
 #chart line.label {
-    stroke:#AAA;
+    stroke:#888;
     stroke-width:1px;
 }
 
 #chart line.baseline {
-    stroke:#CCC;
+    stroke:#AAA;
     stroke-width:2px;
 }
 #chart line.weekhighlight {
-    stroke:#AAA;
+    stroke:#888;
     stroke-width:2px;
 }
 
 #chart text.rule {
     font-family:monospace;
-    fill:#AAA;
+    fill:#888;
 }
 #chart line.rule {
-    stroke:#DDD;
+    stroke:#CCC;
     stroke-width:1px;
 }

@@ -188,7 +188,7 @@ var layers = vis.selectAll("g.layer")
     .data(stack_data)
     .enter().append("g")
     .style("fill", function(d, i) {
-	return tripleToString(hsvToRgb(color(i), 40, 85));
+	return tripleToString(hsvToRgb(color(i), 50, 85));
     })
     .attr("class", "layer");
 
