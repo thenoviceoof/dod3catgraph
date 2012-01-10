@@ -106,18 +106,46 @@ var my = d3.max(stack_data, function(d) {
     return d3.max(d, function(d) {
         return d.y0 + d.y;
     });
-});
+}) || 1;
 
 // interpolation
 var x = function(d) { return d.x * w / mx; };
 var y0 = function(d) { return h - d.y0 * h / my; };
 var y1 = function(d) { return h - (d.y + d.y0) * h / my; };
 
+
+////////////////////////////////////////
 // add the containing svg element
 var vis = d3.select("#chart")
     .append("svg")
     .attr("width", w)
     .attr("height", h + p);
+
+// get some horizontal rules
+var ruleData = d3.range(10).map(function (d){ return (d+1)*10; });
+// util function for y-pos of rules
+function ySpot(offset) {
+    offset = offset || 0;
+    return function(d){ return y0({y0: d}) + offset; };
+}
+vis.selectAll("line.rule")
+    .data(ruleData)
+    .enter().append("line")
+    .attr("class", "rule")
+    .attr("x1", 0)
+    .attr("x2", w)
+    .attr("y1", ySpot())
+    .attr("y2", ySpot());
+// and the associated text
+var ruleLabelOffset = -5;
+vis.selectAll("text.rule")
+    .data(ruleData)
+    .enter().append("text")
+    .attr("class", "rule")
+    .text(String)
+    .attr("text-anchor", "left")
+    .attr("x", 0)
+    .attr("y", ySpot(ruleLabelOffset));
 
 // layers for each repo
 var layers = vis.selectAll("g.layer")
@@ -251,9 +279,20 @@ function redraw() {
     bars.selectAll("rect")
         .transition()
 	.duration(800)
-	.delay(function(d, i) { return i * 1000; })
+	.delay(function(d, i) { return d.x * 20; })
 	.attr("y", y1)
 	.attr("height", function(d) { return y0(d) - y1(d); });
+
+    // move the rules
+    vis.selectAll("line.rule")
+	.transition()
+    	.duration(800)
+	.attr("y1", ySpot())
+	.attr("y2", ySpot());
+    vis.selectAll("text.rule")
+	.transition()
+    	.duration(800)
+	.attr("y", ySpot(ruleLabelOffset));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -57,7 +57,6 @@ footer {
 
 #chart text.label {
     font-family:monospace;
-    border-left:1px black solid;
     fill:#AAA;
 }
 #chart line.label {
@@ -72,4 +71,13 @@ footer {
 #chart line.weekhighlight {
     stroke:#AAA;
     stroke-width:2px;
+}
+
+#chart text.rule {
+    font-family:monospace;
+    fill:#AAA;
+}
+#chart line.rule {
+    stroke:#DDD;
+    stroke-width:1px;
 }
