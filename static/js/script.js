@@ -119,7 +119,11 @@ var vis = d3.select("#chart")
     .attr("height", h + p);
 
 // get some horizontal rules
-var ruleData = d3.range(10).map(function (d){ return (d+1)*10; });
+var ruleData = d3.range(10).map(function (d){
+    // return 10*d;
+    // return Math.pow(2, d);
+    return 2*Math.pow(d+1, 2);
+});
 // util function for y-pos of rules
 function ySpot(offset) {
     offset = offset || 0;
@@ -295,7 +299,11 @@ function redraw() {
 ////////////////////////////////////////////////////////////////////////////////
 // Data load requests
 
-for(var i in repo_list) {
+// recursion, so I can use setTimeout: trying to load cached data means
+// a big pileup, and locks up the cpu pretty well, so we stagger requests
+function loadData(i) {
+    if(i >= repo_list.length)
+	return;
     var repo = repo_list[i];
     // closure to pass in repo name
     var repoClosure = function (repo) {
@@ -319,4 +327,6 @@ for(var i in repo_list) {
 	url: "/"+user+"/"+repo,
 	success: repoClosure(repo),
     });
+    setTimeout(function(){loadData(i+1)}, 200);
 }
+loadData(0);
