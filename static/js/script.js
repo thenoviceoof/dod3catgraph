@@ -71,6 +71,11 @@ function tripleToString(color) {
 var user = "thenoviceoof";
 var repo_list = ["rooibos", "level-up", "flyer-poke", "notesoble", "pensievr"];
 
+function followRepo(name) {
+    var url = "https://github.com/" + user + "/" + name;
+    window.open(url,'_blank');
+}
+
 // consts
 var m = repo_list.length;
 var n = 52;
@@ -81,8 +86,10 @@ var h = 300 - p; // height for data
 
 // generate some empty data
 var start = true;
-var data = d3.range(m).map(function(d) {
-    var tmp_data = d3.range(n).map(function(d,i){ return {x: i, y: 0}; });
+var data = d3.range(m).map(function(d, j) {
+    var tmp_data = d3.range(n).map(function(d, i){
+	return {x: i, y: 0, name: repo_list[j]};
+    });
     return tmp_data;
 });
 
@@ -134,7 +141,11 @@ bars.append("rect")
     .attr("width", x({x: 1.0 - barPadding}))
     .attr("x", x({x: barPadding/2}))
     .attr("y", h)
-    .attr("height", 0);
+    .attr("height", 0)
+    .on("click", function(d) {
+	console.log(d);
+	followRepo(d.name);
+    });
 
 function prevWeekMonthChange(i) {
     function prevWeekMonth(a) {
@@ -150,7 +161,7 @@ function prevWeekMonthChange(i) {
 
 // time labels
 var labels = vis.selectAll("text.label")
-    .data(data[0])
+    .data(data[0]) // just to get the right res
     .enter().append("text")
     .attr("class", "label")
     .attr("x", x)
