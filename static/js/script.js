@@ -69,7 +69,7 @@ function tripleToString(color) {
 
 // !!! TMP:
 var user = "thenoviceoof";
-var repo_list = ["pensievr", "rooibos"];
+var repo_list = ["pensievr", "rooibos", "level-up", "flyer-poke", "notesoble"];
 
 var m = repo_list.length;
 var n = 52;
@@ -89,7 +89,7 @@ var color = d3.scale.linear()
     .range([0,360]);
 
 var p = 20; // padding for labels
-var w = 0.6*$("body").width();
+var w = $("#main").width();
 var h = 200 - .5 - p; // height for data
 
 // bounds in x and y
@@ -116,7 +116,7 @@ var layers = vis.selectAll("g.layer")
     .data(stack_data)
     .enter().append("g")
     .style("fill", function(d, i) {
-	return tripleToString(hsvToRgb(color(i), 60, 90));
+	return tripleToString(hsvToRgb(color(i), 30, 85));
     })
     .attr("class", "layer");
 
