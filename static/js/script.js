@@ -65,42 +65,45 @@ function tripleToString(color) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Data load requests
-
-$.ajax({
-    url: "/thenoviceoof/pensievr",
-    success: function(data) { console.log("mu"); console.log(data); }
-});
-
-////////////////////////////////////////////////////////////////////////////////
 // d3
 
-//var n = 52; // res
-//var m = 2;  // number of layers
-var m = 2;
-var n = 2;
+// !!! TMP:
+var user = "thenoviceoof";
+var repo_list = ["pensievr", "rooibos"];
 
-var data = d3.layout.stack()(dd);
-// !!!
-// get the hue of each repo, evenly interpolated
+var m = repo_list.length;
+var n = 52;
+
+// generate some empty data
+var start = true;
+var data = d3.range(m).map(function(d) {
+    var tmp_data = d3.range(n).map(function(d,i){ return {x: i, y: 0}; });
+    return tmp_data;
+});
+
+// transform the data appropriately
+var stack_data = d3.layout.stack()(data);
+// get the hue for each repo, evenly interpolated
 var color = d3.scale.linear()
     .domain([0,m])
     .range([0,360]);
 
 var p = 20; // padding for labels
-var w = 0.8*$("body").width();
+var w = 0.6*$("body").width();
 var h = 200 - .5 - p; // height for data
 
+// bounds in x and y
 var mx = n;
-var my = d3.max(data, function(d) {
+var my = d3.max(stack_data, function(d) {
     return d3.max(d, function(d) {
         return d.y0 + d.y;
     });
 });
+
+// interpolation
 var x = function(d) { return d.x * w / mx; };
 var y0 = function(d) { return h - d.y0 * h / my; };
 var y1 = function(d) { return h - (d.y + d.y0) * h / my; };
-var y2 = function(d) { return d.y * h / mz; }; // or `my` to not rescale
 
 // add the containing svg element
 var vis = d3.select("#chart")
@@ -110,32 +113,28 @@ var vis = d3.select("#chart")
 
 // layers for each repo
 var layers = vis.selectAll("g.layer")
-    .data(data)
+    .data(stack_data)
     .enter().append("g")
     .style("fill", function(d, i) {
 	return tripleToString(hsvToRgb(color(i), 60, 90));
     })
     .attr("class", "layer");
 
-// group for each bar resolution
+// group for each stack
 var bars = layers.selectAll("g.bar")
     .data(function(d) { return d; })
     .enter().append("g")
     .attr("class", "bar")
     .attr("transform", function(d) { return "translate(" + x(d) + ",0)"; });
 
-// each 
+// draw "empty" bars
 bars.append("rect")
     .attr("width", x({x: .9}))
     .attr("x", 0)
     .attr("y", h)
-    .attr("height", 0)
-    .transition()
-    .delay(function(d, i) { return i * 10; })
-    .attr("y", y1)
-    .attr("height", function(d) { return y0(d) - y1(d); });
+    .attr("height", 0);
 
-// lower labels
+// time labels
 var labels = vis.selectAll("text.label")
     .data(data[0])
     .enter().append("text")
@@ -154,3 +153,55 @@ vis.append("line")
     .attr("y1", h)
     .attr("y2", h)
     .attr("class","baseline");
+
+function redraw() {
+    stack_data = d3.layout.stack()(data);
+
+    // bounds in x and y
+    my = d3.max(stack_data, function(d) {
+	return d3.max(d, function(d) {
+            return d.y0 + d.y;
+	});
+    });
+
+    // interpolation
+    x = function(d) { return d.x * w / mx; };
+    y0 = function(d) { return h - d.y0 * h / my; };
+    y1 = function(d) { return h - (d.y + d.y0) * h / my; };
+
+    // and redraw the bars
+    bars.selectAll("rect")
+        .transition()
+	.delay(function(d, i) { return i * 10; })
+	.attr("y", y1)
+	.attr("height", function(d) { console.log(d); return y0(d) - y1(d); });
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Data load requests
+
+for(var i in repo_list) {
+    var repo = repo_list[i];
+    // closure to pass in repo name
+    var repoClosure = function (repo) {
+	// success handler
+	return function(tmp_data) {
+	    // find the index of the repo
+	    var ind = $.inArray(repo, repo_list);
+	    tmp_data = d3.range(n).map(function(d, i) {
+		return {x: i, y: tmp_data[i]};
+	    });
+	    // update the data inline
+	    for(var j in tmp_data) {
+		data[ind][j].x = tmp_data[j].x;
+		data[ind][j].y = tmp_data[j].y;
+	    }
+	    console.log("redrawing");
+	    redraw();
+	}
+    };
+    $.ajax({
+	url: "/"+user+"/"+repo,
+	success: repoClosure(repo),
+    });
+}
