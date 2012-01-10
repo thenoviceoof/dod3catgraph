@@ -77,7 +77,7 @@ var n = 52;
 
 var p = 24; // padding for labels
 var w = $("#main").width();
-var h = 200 - .5 - p; // height for data
+var h = 300 - p; // height for data
 
 // generate some empty data
 var start = true;
