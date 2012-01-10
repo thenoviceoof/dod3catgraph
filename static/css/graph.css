@@ -9,33 +9,6 @@
     /* outline:1px black solid; */
 }
 
-em {
-    font-style:italic;
-}
-
-a {
-    color:black;
-}
-a:visited {
-    color:gray;
-}
-
-h1#title {
-    margin:0.5em 0;
-    font:bold 24pt arial;
-}
-
-footer {
-    position:absolute;
-    left:0;
-    bottom:0;
-    width:100%;
-    margin:0 auto;
-    font:10pt arial, sans-serif;
-    text-align:center;
-    letter-spacing:1px;
-}
-
 #chart {
     margin:0 auto;
 }

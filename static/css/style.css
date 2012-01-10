@@ -1,14 +1,4 @@
-#main {
-    position:absolute;
-    top:50%;
-    left:50%;
-    width:30em;
-    height:14em;
-    margin:-7em 0 0 -15em;
-    text-align:center;
-    /* outline:1px black solid; */
-}
-
+/* general ---------------------------------------- */
 em {
     font-style:italic;
 }
@@ -20,7 +10,18 @@ a:visited {
     color:gray;
 }
 
-/* title things */
+footer {
+    position:absolute;
+    left:0;
+    bottom:0;
+    width:100%;
+    margin:0 auto;
+    font:10pt arial, sans-serif;
+    text-align:center;
+    letter-spacing:1px;
+}
+
+/* title ---------------------------------------- */
 h1#title {
     margin:0.5em 0;
     font:24pt arial;
@@ -37,33 +38,4 @@ a#title-cat {
 
 h1#title a, h1#title a:visited {
     color:black;
-}
-
-p#about {
-    width:80%;
-    margin:0.5em auto;
-    line-height:1.25em;
-}
-
-#user {
-    width:80%;
-    margin:0.5em;
-    text-align:center;
-    font:16pt arial;
-    background-color:#DDF;
-}
-
-#submit {
-    font:16pt arial;
-}
-
-footer {
-    position:absolute;
-    left:0;
-    bottom:0;
-    width:100%;
-    margin:0 auto;
-    font:10pt arial, sans-serif;
-    text-align:center;
-    letter-spacing:1px;
 }
