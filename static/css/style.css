@@ -20,9 +20,23 @@ a:visited {
     color:gray;
 }
 
+/* title things */
 h1#title {
     margin:0.5em 0;
-    font:bold 24pt arial;
+    font:24pt arial;
+}
+
+a#title-do {
+}
+a#title-d3 {
+    font-weight:bold;
+}
+a#title-cat {
+    font-style:italic;
+}
+
+h1#title a, h1#title a:visited {
+    color:black;
 }
 
 p#about {

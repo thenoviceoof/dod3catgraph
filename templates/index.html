@@ -3,20 +3,23 @@
 <head>
   <meta charset="utf-8">
 
-  <title>ALL the Github Commits</title>
+  <title>dod3catgraph</title>
   <meta name="description" content="An overall graph of your participation in every github repo">
 
   <link rel="stylesheet" href="/static/css/reset.css">
+  {% block stylesheet %}
   <link rel="stylesheet" href="/static/css/style.css">
+  {% endblock %}
 
 </head>
 
 <body>
   <div id="main" role="main">
     <header>
-      <h1 id="title"><em>ALL</em> your Github Commits</h1>
+      <h1 id="title"><a id="title-do" href="http://en.wikipedia.org/wiki/Dodecahedron">do</a><a id="title-d3" href="http://mbostock.github.com/d3/">d3</a><a id="title-cat" href="https://github.com/">cat</a><a id="title-graph" href="javascript:alert('bang!')">graph</a></h1>
     </header>
 
+    {% block main %}
     <p id="about">
       Give us a github username, and we'll give you a participation graph
       for <em>all</em> your repos.
@@ -26,10 +29,14 @@
       <input type="text" name="user" id="user" /><br/>
       <input type="submit" id="submit" />
     </form>
+    {% endblock %}
   </div>
 
   <footer>
     By <a href="http://thenoviceoof.com">Thenoviceoof</a>
   </footer>
+
+  {% block scripts %}
+  {% endblock %}
 </body>
 </html>
