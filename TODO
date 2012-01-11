@@ -1,0 +1,11 @@
+TODO list
+================================================================================
+
+ - Add OAuth routing
+   - once you have a token, use that instead for an hour or so
+   - once signed in, display a follow list
+ - error pages
+ - favicon
+
+Maybe:
+ - a logo?
