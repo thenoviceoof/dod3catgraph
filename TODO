@@ -6,6 +6,8 @@ TODO list
    - once signed in, display a follow list
  - error pages
  - favicon
+ - legend for colors
+ - prevent similar colors from being close somehow
 
 Maybe:
  - a logo?
