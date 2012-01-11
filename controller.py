@@ -1,3 +1,6 @@
+from google.appengine.dist import use_library
+use_library('django', '0.96')
+
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import run_wsgi_app
@@ -17,7 +20,9 @@ except ImportError:
 GITHUB_API_URL_BASE = "https://api.github.com/"
 GITHUB_URL_BASE = "https://github.com/"
 
-TIMEOUT = 60 # assuming minutes
+TIMEOUT = 60 # assuming minutes, for the user data
+REQUEST_LIMIT_TIMEOUT = 5 # assuming minutes, how long to keep the request limit
+LOWER_REQUEST_LIMIT = 100 # how many requeststo stop trying to load
 
 class Index(webapp.RequestHandler):
     def get(self):
@@ -26,20 +31,27 @@ class Index(webapp.RequestHandler):
         if not(user):
             self.response.out.write(template.render("templates/index.html", {}))
             return
-        # !!! have to rewrite to use oauth if break limits
 
         # check if the user is in memcache
         data = memcache.get("user")
         if data is None:
+            # check if we are hitting the request limit yet
+            limit = memcache.get("_requests_left")
+            if limit and limit < LOWER_REQUEST_LIMIT:
+                # reroute to oauth
+                self.response.out.write(template.render("templates/oauth.html",
+                                                        {}))
+                return
+
             # get the repos (users/:user/repos)
             repo_list_url = "%susers/%s/repos?type=all" % (GITHUB_API_URL_BASE,
                                                            user)
             # make the request
             result = urlfetch.fetch(repo_list_url)
             requests_left = result.headers["X-RateLimit-Remaining"]
-            ## we might use this if we reroute to oauth to get around limits
-            # usernames are (\w|\-)
-            if not memcache.add("_requests_left", requests_left, TIMEOUT):
+            # usernames are (\w|\-), so _ disambiguates
+            if not memcache.add("_requests_left", requests_left,
+                                REQUEST_LIMIT_TIMEOUT):
                 logging.error("Memcache set failed.")
             if result.status_code != 200:
                 # !!! replace with a better exception?

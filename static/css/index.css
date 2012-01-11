@@ -27,3 +27,11 @@ p#about {
 #submit {
     font:16pt arial;
 }
+
+#github-submit {
+    padding:0.5em;
+    font:16pt arial;
+}
+#github-submit img {
+    vertical-align:middle;
+}

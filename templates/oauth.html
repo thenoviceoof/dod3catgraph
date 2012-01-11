@@ -1,0 +1,18 @@
+{% extends "index.html" %}
+
+{% block stylesheet %}
+<link rel="stylesheet" href="/static/css/index.css">
+{% endblock %}
+
+{% block main %}
+    <p id="about">
+      Oops! We're a bit overloaded at the moment: you can get
+      around this by <a href="http://developer.github.com/v3/oauth/">allowing us access</a> to your <a href="http://developer.github.com/v3/oauth/">Github account</a>.
+    </p>
+
+    <form action="/oauth" method="get">
+      <button id="github-submit">
+	Sign in with <img src="/static/img/github_logo.png"/>
+      </button>
+    </form>
+{% endblock %}
