@@ -21,6 +21,10 @@ footer {
     letter-spacing:1px;
 }
 
+h2 {
+    font:20pt arial;
+}
+
 /* title ---------------------------------------- */
 h1#title {
     margin:0.5em 0;
