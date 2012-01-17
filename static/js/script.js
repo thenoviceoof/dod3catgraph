@@ -67,7 +67,7 @@ function tripleToString(color) {
 ////////////////////////////////////////////////////////////////////////////////
 // util
 
-// first, we randomly arrange the repos, in case colors don't work
+// first, we randomly arrange the repos, in case arrangement is strange
 function shuffle(list) {
     function swap(list, i,j) {
 	var tmp = list[i];
@@ -88,6 +88,11 @@ function shuffle(list) {
     return list;
 }
 repo_list = shuffle(repo_list);
+
+// we have to shuffle the colors, too: like colors by default end up
+// next to each other
+var repo_colors = shuffle(d3.range(repo_list.length));
+
 
 // open the repo of interest in a new tab/window
 function followRepo(user, name) {
@@ -188,7 +193,7 @@ var layers = vis.selectAll("g.layer")
     .data(stack_data)
     .enter().append("g")
     .style("fill", function(d, i) {
-	return tripleToString(hsvToRgb(color(i), 50, 85));
+	return tripleToString(hsvToRgb(color(repo_colors[i]), 50, 85));
     })
     .attr("class", "layer");
 
